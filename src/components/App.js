@@ -8,8 +8,8 @@ function App()
 	const [currTaskName, setCurrTaskName] = useState("");
 	
 	const addToList=() => {
-		// alert("add to task list");
-		setTaskName([...taskName, currTaskName]);
+		taskName.push(currTaskName);
+		setTaskName([...taskName]);
 		setCurrTaskName("");
 	}
 
@@ -18,9 +18,8 @@ function App()
 	}
 
 	const handleRemoveItem = idx => {
-		const temp = [...taskName];	
-		temp.splice(idx, 1);	
-		setTaskName(temp);
+		taskName.splice(idx, 1);
+		setTaskName([...taskName]);	
 	}
 
 	 const handleUpdate = (idx, newTask) => {
@@ -33,7 +32,7 @@ function App()
 	<div id="main">
 		<h1>Todo List React</h1>
 		<textarea className="bg-pink" id="task" value={currTaskName} onChange={handleChange}></textarea>
-		<button disabled={currTaskName.trim().length === 0} onClick={addToList} id="btn">Add Itrm</button>
+		<button disabled={currTaskName.trim().length === 0} onClick={addToList} id="btn">Add Item</button>
 
 		{taskName.map((task, taskIdx) =>(
 		<ListItem
