@@ -9,8 +9,21 @@ button{
     text-align: center;
     justify-content: center;
     align-items: center;
+    margin-top: 10px;
 }
 
 .bg-pink{
 	background-color:pink;
+}
+
+#task {
+    /* margin: 0px; */
+    height: 98px;
+    width: 309px;
+    display: block;
+    
+}
+body {
+    display: flex;
+    margin-left: 50px;
 }
