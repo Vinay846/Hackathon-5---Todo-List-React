@@ -16,14 +16,14 @@ export default function ListItem(props) {
     <div className="list">
     { editedMode ? (
     <>
-    <input value={editedItem} onChange={handleChange} type="text" />
-    <button onClick={saveEditedItem}>save</button>
+    <textarea className="editTask " value={editedItem} onChange={handleChange} type="text"></textarea>
+    <button className="saveTask" disabled={editedItem.trim().length===0} onClick={saveEditedItem}>Save Task</button>
     </>
     ) : (
       <>
       {props.task}
-      <button onClick={()=>{setEditedMode(true)}}>edit</button>
-      <button onClick={()=> props.handleRemoveItem(props.idx)}>delete</button>
+      <button className="edit" onClick={()=>{setEditedMode(true)}}>edit</button>
+      <button className="delete" onClick={()=> props.handleRemoveItem(props.idx)}>delete</button>
       </>
     )}
     </div>);

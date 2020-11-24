@@ -4,7 +4,7 @@ import ListItem from './ListItem';
 
 function App() 
 {
-	const [taskName, setTaskName] = useState(["buy Milk", "Buy Vegitable", "Make Team", "Wait For"]);
+	const [taskName, setTaskName] = useState(["Buy milk", "Buy vegetable"]);
 	const [currTaskName, setCurrTaskName] = useState("");
 	
 	const addToList=() => {
@@ -33,7 +33,7 @@ function App()
 	<div id="main">
 		<h1>Todo List React</h1>
 		<textarea className="bg-pink" id="task" value={currTaskName} onChange={handleChange}></textarea>
-		<button disabled={currTaskName.trim().length <= 0} onClick={addToList} id="btn">Add Task</button>
+		<button disabled={currTaskName.trim().length === 0} onClick={addToList} id="btn">Add Itrm</button>
 
 		{taskName.map((task, taskIdx) =>(
 		<ListItem
