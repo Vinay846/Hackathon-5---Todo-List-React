@@ -3,7 +3,7 @@ import './../styles/App.css';
 import ListItem from './ListItem';
 
 function App() {
-	const [ taskName, setTaskName ] = useState([ 'Buy milk', 'Buy vegetable' ]);
+	const [ taskName, setTaskName ] = useState([]);
 	const [ currTaskName, setCurrTaskName ] = useState('');
 
 	const addToList = () => {
