@@ -1,49 +1,107 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './../styles/App.css';
-import ListItem from './ListItem';
+import LoginForm from './LoginForm';
+import TodoList from './TodoList';
+import LoaderHook from './LoaderHook';
+import CurdLoaderHook from './CloaderHook'
 
 function App() {
-	const [ taskName, setTaskName ] = useState([]);
-	const [ currTaskName, setCurrTaskName ] = useState('');
+	const [loggedIn, setLoggedIn] = useState(true);
+	const [error, setError] = useState(undefined);
+	const [userName, setuserName] = useState(undefined);
+	const [loader, showLoader, hideLoader] = LoaderHook();
+	const [crudLoader, showCurdLoader, hideCurdLoader] = CurdLoaderHook();
 
-	const addToList = () => {
-		taskName.push(currTaskName);
-		setTaskName([ ...taskName ]);
-		setCurrTaskName('');
-	};
+	const getUserName = () => {
+		showLoader();
+		return fetch('https://vinu-backed-todo.herokuapp.com/userinfo', {credentials: "include"})
+		.then(r => {
+			if(r.ok) {
+				return r.json();
+			}else{
+				setLoggedIn(false);
+				setuserName(undefined);
+				hideLoader();
+				return { success: false};
+			}
+		}).then(r => {
+			if(r.success !== false) {
+				setLoggedIn(true);
+				setuserName(r.userName);
+				hideLoader();
+			}
+		}).catch(()=>{
+			console.log("Internet not working");
+		})
+	}
 
-	const handleChange = (event) => {
-		setCurrTaskName(event.target.value);
-	};
+	useEffect(() => {
+		getUserName();
+	},[]);
 
-	const handleRemoveItem = (idx) => {
-		taskName.splice(idx, 1);
-		setTaskName([ ...taskName ]);
-	};
+	const logoutHandler = () => {
+		return fetch('https://vinu-backed-todo.herokuapp.com/logout', {credentials: "include" })
+		.then(r => {
+			if(r.ok){
+				setLoggedIn(false);
+				setuserName(undefined);
+				setError(undefined);
+			}
+		})
+	}
 
-	const handleUpdate = (idx, newTask) => {
-		taskName[idx] = newTask;
-		setTaskName([ ...taskName ]);
+	const signinOrSignup = (url, username, password) => {
+		showCurdLoader();
+		fetch(url, {
+			method: "POST",
+			body: JSON.stringify({userName: username, password}),
+			headers: {
+				"Content-Type": "application/json",
+			},
+			credentials: "include"
+		})
+		.then((r)=>{
+			if(r.ok){
+				return{ success: true };
+			}else{
+				return r.json()
+			}
+		})
+		.then((r) => {
+			if(r.success === true){
+				hideCurdLoader();
+				return getUserName();
+			}else{
+				setError(r.err);
+				hideCurdLoader();
+			}
+			
+		});
+	}
+	const signupHandler = (username, password) => {
+		signinOrSignup('https://vinu-backed-todo.herokuapp.com/signup', username, password);
 	};
+	
+	const signinHandler = (username, password) => {
+		signinOrSignup('https://vinu-backed-todo.herokuapp.com/signin', username, password);
+	}
+	
 
 	return (
-		<div id="main">
-			<h1>Todo List React</h1>
-			<textarea id="task" value={currTaskName} onChange={handleChange} />
-			<button id="btn" disabled={currTaskName.trim().length === 0} onClick={addToList}>
-				Add Item
-			</button>
-
-			{taskName.map((task, taskIdx) => (
-				<ListItem
-					task={task}
-					key={`${task}_${taskIdx}`}
-					idx={taskIdx}
-					handleUpdate={handleUpdate}
-					handleRemoveItem={handleRemoveItem}
-				/>
-			))}
-		</div>
+		<>
+		{crudLoader}
+		{loader}
+		{loggedIn ? 
+		(
+			<TodoList username={userName} logoutHandler={logoutHandler} />
+		):(
+			<LoginForm
+				signupHandler={signupHandler} 
+				signinHandler={signinHandler}
+				error={error}
+			/>
+		)}
+		</>
 	);
 }
 
